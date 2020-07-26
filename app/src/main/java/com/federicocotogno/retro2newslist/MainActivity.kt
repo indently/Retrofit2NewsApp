@@ -21,6 +21,7 @@ const val BASE_URL = "https://api.currentsapi.services"
 class MainActivity : AppCompatActivity() {
 
     lateinit var countdownTimer: CountDownTimer
+    private var seconds = 3L
 
     private var titlesList = mutableListOf<String>()
     private var descList = mutableListOf<String>()
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.d("MainActivity", e.toString())
                 withContext(Dispatchers.Main) {
-                    attemptRequestAgain(3)
+                    attemptRequestAgain(seconds)
 
                 }
             }
@@ -79,12 +80,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun attemptRequestAgain(seconds: Long) {
-        countdownTimer = object: CountDownTimer(seconds*1000,1000){
+        countdownTimer = object: CountDownTimer(seconds*1010,1000){
             override fun onFinish() {
                 makeAPIRequest()
                 countdownTimer.cancel()
+                tv_noInternetCountDown.visibility = View.GONE
+                this@MainActivity.seconds+=3
             }
             override fun onTick(millisUntilFinished: Long) {
+                tv_noInternetCountDown.visibility = View.VISIBLE
+                tv_noInternetCountDown.text = "Cannot retrieve data...\nTrying again in: ${millisUntilFinished/1000}"
                 Log.d("MainActivity", "Could not retrieve data. Trying again in ${millisUntilFinished/1000} seconds")
             }
         }
